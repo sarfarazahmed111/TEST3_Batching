@@ -1,0 +1,114 @@
+create or replace 
+PACKAGE PX_AUTO_BATCHING_PKG AS
+
+AUTO_BATCH   CONSTANT VARCHAR2(15) := 'AUTO_BATCH';
+PROCEDURE main (P_ERRBUFF OUT VARCHAR2 , P_RETCODE OUT NUMBER,P_SETUP_ID NUMBER,p_request_id number);
+
+PROCEDURE generate_batch(P_BATCH_LOGIC VARCHAR2,P_Press_Type VARCHAR2,P_HEADER_ID NUMBER);
+
+PROCEDURE call_wrapper(P_ERRBUFF OUT VARCHAR2 , P_RETCODE OUT NUMBER);
+
+PROCEDURE generate_batch_colour_by_size(P_HEADER_ID NUMBER);
+
+PROCEDURE generate_batch_copy_change(P_HEADER_ID NUMBER);
+
+PROCEDURE generate_batch_combo(P_HEADER_ID NUMBER);
+
+PROCEDURE delete_unbatched_orders(P_BATCH_NUMBERS APPS.JTF_VARCHAR2_TABLE_200);
+
+--PROCEDURE CALL_STAGING_WRAPPER(P_ERRBUFF OUT VARCHAR2 , P_RETCODE OUT NUMBER);
+
+PROCEDURE delete_staging_orders(P_BATCH_NUMBERS APPS.JTF_VARCHAR2_TABLE_200);
+
+PROCEDURE send_error_report(P_REQUEST_ID number);
+
+FUNCTION get_colour_by_size_status(P_IIID NUMBER,P_ORG_ID NUMBER) RETURN CHAR;
+
+FUNCTION get_copy_change_status(P_IIID NUMBER,P_ORG_ID NUMBER) RETURN CHAR;
+
+FUNCTION get_combo_status(P_IIID NUMBER,P_ORG_ID NUMBER) RETURN VARCHAR2;
+
+FUNCTION get_vf_value(P_DATA varchar2,P_POS number) RETURN varchar2;
+
+FUNCTION GET_SKU_QTY(P_LINE_ID NUMBER) RETURN NUMBER;
+
+FUNCTION CHECK_CBS_SKU(L_VF_POSITION NUMBER,P_IIID NUMBER,P_ORG_ID NUMBER,P_HEADER_ID NUMBER,P_LINE_ID NUMBER) RETURN NUMBER;	-- Added by Sarfaraz // NS-MOCK2-157 // 02-11-2022
+
+PROCEDURE release_soldj_auto(p_ret_code OUT Varchar2,p_ret_msg OUT Varchar2,p_group_id IN NUMBER DEFAULT NULL);
+
+PROCEDURE release_page_fun_auto_new(P_BATCH_NUMBERS APPS.JTF_VARCHAR2_TABLE_200,--1
+                           -- P_TRAB_SU  IN VARCHAR2,--2
+                           -- P_TRASUB_SU IN VARCHAR2,--3
+                           -- P_BATR_PICK IN VARCHAR2,--4
+                           -- P_BAT_DES_JOB IN VARCHAR2,--5
+                           -- P_TYPE_SETT IN VARCHAR2,--6
+                           -- P_ORDER_BATCH IN VARCHAR2,--7
+                            P_ORG_CODE IN VARCHAR2,--8
+                           -- P_PRINT_SCOPE_CONFIG VARCHAR2,--9
+                           -- P_BATCH_SUMMARY_COPY VARCHAR2,--10
+                           -- P_DJD_COPY         VARCHAR2,--11
+                           -- P_PACKING_FORM_COPY  VARCHAR2,--12
+                            P_OUT_RET_CODE OUT NUMBER,--13
+                            P_out_return_msg OUT VARCHAR2
+                            );--14
+
+PROCEDURE release_page_fun_auto(P_BATCH_NUMBERS APPS.JTF_VARCHAR2_TABLE_200,--1
+                            P_TRAB_SU  IN VARCHAR2,--2
+                            P_TRASUB_SU IN VARCHAR2,--3
+                            P_BATR_PICK IN VARCHAR2,--4
+                            P_BAT_DES_JOB IN VARCHAR2,--5
+                            P_TYPE_SETT IN VARCHAR2,--6
+                            P_ORDER_BATCH IN VARCHAR2,--7
+                            P_ORG_CODE IN VARCHAR2,--8
+                            P_PRINT_SCOPE_CONFIG VARCHAR2,--9
+                            P_BATCH_SUMMARY_COPY VARCHAR2,--10
+                            P_DJD_COPY         VARCHAR2,--11
+                            P_PACKING_FORM_COPY  VARCHAR2,--12
+                            P_OUT_RET_CODE OUT NUMBER,--13
+                            P_out_return_msg OUT VARCHAR2);--14
+
+PROCEDURE Set_printer_options_auto(p_no_of_copies Number , p_printer Varchar2);
+
+PROCEDURE pr_attach_template_auto(p_conc_prg Varchar2);
+
+PROCEDURE pr_log_msg_auto(p_msg IN VARCHAR2,p_destination IN NUMBER DEFAULT fnd_file.log);
+
+Procedure get_printer_scope_config_auto(p_batch_number Varchar2,
+									  --     p_inv_org             VARCHAR2,
+										   p_bs_copy       OUT NUMBER,
+										   p_djd_copy      OUT NUMBER,
+										   p_apf_copy      OUT NUMBER,
+										   p_printer          OUT Varchar2,
+										   p_default_setup OUT Varchar2,
+										   p_default_bs_printer     OUT Varchar2,
+										   p_default_djd_printer   OUT Varchar2,
+										   p_default_apf_printer    OUT Varchar2,
+										   p_msg                    OUT Varchar2
+										);
+
+/*PROCEDURE EXPORT_REPORT(P_ERRBUFF OUT VARCHAR2 , P_RETCODE OUT NUMBER,P_GROUP_ID NUMBER);
+*/
+PROCEDURE send_email_error_report(P_ERRBUFF OUT VARCHAR2 , P_RETCODE OUT NUMBER,P_REQUEST_ID NUMBER);
+
+PROCEDURE pr_get_autobatch_config_info(p_request_id Number, p_autobatch_header_id Out Number , p_autobatch_config Out Xmltype);
+
+FUNCTION fn_get_autobatch_cf_query(p_seq_no Number , p_Calling_Unit Varchar2 Default Null) Return Varchar2;
+
+FUNCTION fn_get_main_query(P_HEADER_ID number) return long;
+
+procedure pr_insert_Batch_error_record
+(
+  p_order_number      Number,
+  p_line_no                  Number,
+  p_error_msg             Varchar2,
+  p_batch_program     Varchar2,
+  p_customer_name     Varchar2,
+  p_assembly                 Varchar2,
+  p_quantity                    Number,
+  p_productionmethod   Varchar2,
+  p_presstype                   Varchar2,
+  p_jobno                          Varchar2,
+  p_organization_code     Varchar2
+);
+
+END PX_AUTO_BATCHING_PKG;
